@@ -17,6 +17,130 @@ const STYLISTS = [
   { id: "subash", name: "Subash & Sisan", role: "Master Cutters", image: "https://www.salonliyo.com/assets/images/our-product.jpg" }
 ];
 
+// ── Contact Form Component ──────────────────────────────────────
+function ContactForm() {
+  const [fields, setFields] = useState({ name: "", phone: "", email: "", message: "" });
+  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFields(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus("sending");
+    setErrorMsg("");
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(fields),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Unknown error");
+      setStatus("success");
+      setFields({ name: "", phone: "", email: "", message: "" });
+    } catch (err: any) {
+      setStatus("error");
+      setErrorMsg(err.message || "Something went wrong. Please try again.");
+    }
+  };
+
+  return (
+    <div className="contact-form-col" data-reveal>
+      <div className="contact-form-card">
+        <p className="contact-form-title">Send a Message</p>
+        {status === "success" ? (
+          <div className="contact-form-success">
+            <div className="contact-success-icon">✓</div>
+            <p className="contact-success-headline">Message Sent</p>
+            <p className="contact-success-sub">Thank you — we'll be in touch shortly.</p>
+            <button
+              className="contact-form-btn"
+              onClick={() => setStatus("idle")}
+            >
+              Send Another
+            </button>
+          </div>
+        ) : (
+          <form className="contact-form" onSubmit={handleSubmit} noValidate>
+            <div className="contact-form-row">
+              <div className="contact-field-group">
+                <label className="contact-field-label" htmlFor="cf-name">Full Name <span aria-hidden="true">*</span></label>
+                <input
+                  id="cf-name"
+                  className="contact-field-input"
+                  type="text"
+                  name="name"
+                  placeholder="Your full name"
+                  value={fields.name}
+                  onChange={handleChange}
+                  required
+                  autoComplete="name"
+                />
+              </div>
+              <div className="contact-field-group">
+                <label className="contact-field-label" htmlFor="cf-phone">Phone</label>
+                <input
+                  id="cf-phone"
+                  className="contact-field-input"
+                  type="tel"
+                  name="phone"
+                  placeholder="+94 77 000 0000"
+                  value={fields.phone}
+                  onChange={handleChange}
+                  autoComplete="tel"
+                />
+              </div>
+            </div>
+            <div className="contact-field-group">
+              <label className="contact-field-label" htmlFor="cf-email">Email Address <span aria-hidden="true">*</span></label>
+              <input
+                id="cf-email"
+                className="contact-field-input"
+                type="email"
+                name="email"
+                placeholder="you@email.com"
+                value={fields.email}
+                onChange={handleChange}
+                required
+                autoComplete="email"
+              />
+            </div>
+            <div className="contact-field-group">
+              <label className="contact-field-label" htmlFor="cf-message">Message <span aria-hidden="true">*</span></label>
+              <textarea
+                id="cf-message"
+                className="contact-field-input contact-field-textarea"
+                name="message"
+                placeholder="Tell us how we can help you…"
+                value={fields.message}
+                onChange={handleChange}
+                required
+                rows={5}
+              />
+            </div>
+            {status === "error" && (
+              <p className="contact-form-error">{errorMsg}</p>
+            )}
+            <button
+              className={`contact-form-btn ${status === "sending" ? "is-sending" : ""}`}
+              type="submit"
+              disabled={status === "sending"}
+            >
+              {status === "sending" ? "Sending…" : "Send Message →"}
+            </button>
+            <p className="contact-form-note">We reply within 24 hours.</p>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+}
+
+
+
 export default function Home() {
   const [soundEnabled, setSoundEnabled] = useState(false);
   const soundEnabledRef = useRef(soundEnabled);
@@ -962,26 +1086,45 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="contact section" aria-labelledby="contact-title">
-          <div>
-            <p className="eyebrow">Contact</p>
-            <h2 id="contact-title">LIYO Studio</h2>
-            <p>No.6, Pagoda Road,</p>
-            <p>Nugegoda, Sri Lanka</p>
-            <p>Tue-Sun / 09:00-19:00</p>
+        <section id="contact" className="contact-section section" aria-labelledby="contact-title" data-reveal>
+          {/* Left: Info + Map */}
+          <div className="contact-info-col">
+            <p className="eyebrow">Get in Touch</p>
+            <h2 id="contact-title" className="contact-heading">LIYO Studio</h2>
+            <div className="contact-details">
+              <div className="contact-detail-item">
+                <span className="contact-detail-label">Address</span>
+                <span className="contact-detail-value">No.6, Pagoda Road,<br/>Nugegoda, Sri Lanka</span>
+              </div>
+              <div className="contact-detail-item">
+                <span className="contact-detail-label">Hours</span>
+                <span className="contact-detail-value">Tue – Sun / 09:00 – 19:00<br/>Monday: Closed</span>
+              </div>
+              <div className="contact-detail-item">
+                <span className="contact-detail-label">Phone</span>
+                <span className="contact-detail-value"><a href="tel:+94773885122">+94 77 388 5122</a></span>
+              </div>
+              <div className="contact-detail-item">
+                <span className="contact-detail-label">Email</span>
+                <span className="contact-detail-value"><a href="mailto:salonliyo@gmail.com">salonliyo@gmail.com</a></span>
+              </div>
+            </div>
+            <div className="contact-map" aria-label="Salon Liyo location map">
+              <iframe
+                src="https://maps.google.com/maps?q=Salon%20Liyo%2C%20No.%206%2C%20Pagoda%20Road%2C%20Nugegoda%2C%20Sri%20Lanka&t=&z=16&ie=UTF8&iwloc=&output=embed"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Salon Liyo Location Map"
+              />
+            </div>
           </div>
-          <div className="map" aria-label="Salon Liyo location map">
-            <iframe
-              src="https://maps.google.com/maps?q=Salon%20Liyo%2C%20No.%206%2C%20Pagoda%20Road%2C%20Nugegoda%2C%20Sri%20Lanka&t=&z=16&ie=UTF8&iwloc=&output=embed"
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Salon Liyo Location Map"
-            />
-          </div>
+
+          {/* Right: Contact Form */}
+          <ContactForm />
         </section>
       </main>
 
