@@ -18,6 +18,10 @@ const STYLISTS = [
 ];
 
 // ── Contact Form Component ──────────────────────────────────────
+// Web3Forms access key — safe to be public. Delivers to sakuniakela273@gmail.com
+// Get your key: https://web3forms.com/
+const WEB3FORMS_KEY = "c15c97de-d2fa-44b2-b53d-e5de0b4f0e50";
+
 function ContactForm() {
   const [fields, setFields] = useState({ name: "", phone: "", email: "", message: "" });
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
@@ -32,13 +36,22 @@ function ContactForm() {
     setStatus("sending");
     setErrorMsg("");
     try {
-      const res = await fetch("/api/contact", {
+      const payload = {
+        access_key: WEB3FORMS_KEY,
+        subject: `New message from ${fields.name} — LIYO Studio`,
+        from_name: "LIYO Studio Contact Form",
+        name: fields.name,
+        email: fields.email,
+        phone: fields.phone || "—",
+        message: fields.message,
+      };
+      const res = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(fields),
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Unknown error");
+      if (!data.success) throw new Error(data.message || "Failed to send.");
       setStatus("success");
       setFields({ name: "", phone: "", email: "", message: "" });
     } catch (err: any) {
