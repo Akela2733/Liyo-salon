@@ -109,9 +109,9 @@ button, select {
   top: 0;
   left: 0;
   right: 0;
-  z-index: 40;
+  z-index: 55;
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto 1fr auto auto;
   align-items: center;
   gap: 22px;
   padding: 22px clamp(18px, 4vw, 56px);
@@ -380,10 +380,12 @@ nav a:hover, footer a:hover {
   nav { display: none; }
   .book-now-header-btn { display: none; }
 
-  /* Header becomes 2-col on mobile */
+  /* Header switches to flex on mobile so logo is left, hamburger is right */
   .site-header {
-    grid-template-columns: auto auto;
+    display: flex;
     justify-content: space-between;
+    align-items: center;
+    gap: 0;
   }
 }
 
