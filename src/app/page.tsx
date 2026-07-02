@@ -20,6 +20,7 @@ const STYLISTS = [
 export default function Home() {
   const [soundEnabled, setSoundEnabled] = useState(false);
   const soundEnabledRef = useRef(soundEnabled);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Wordmark rectangle animation state
   const [animKey, setAnimKey] = useState(0);
@@ -362,7 +363,71 @@ export default function Home() {
         >
           Book Now
         </a>
+        {/* ── Mobile Hamburger ── */}
+        <button
+          className={`hamburger-btn ${mobileMenuOpen ? 'is-open' : ''}`}
+          aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={mobileMenuOpen}
+          onClick={() => setMobileMenuOpen(o => !o)}
+        >
+          <span /><span /><span />
+        </button>
       </header>
+
+      {/* ── Mobile Sidebar ── */}
+      <div
+        className={`mobile-sidebar-backdrop ${mobileMenuOpen ? 'is-open' : ''}`}
+        onClick={() => setMobileMenuOpen(false)}
+        aria-hidden="true"
+      />
+      <aside
+        className={`mobile-sidebar ${mobileMenuOpen ? 'is-open' : ''}`}
+        aria-label="Mobile navigation"
+      >
+        <div className="mobile-sidebar-header">
+          <span className="mobile-sidebar-logo">LIYO</span>
+          <button
+            className="mobile-sidebar-close"
+            aria-label="Close menu"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            ✕
+          </button>
+        </div>
+
+        <nav className="mobile-sidebar-nav" aria-label="Mobile primary navigation">
+          {[
+            { href: '#services', label: 'Services', num: '01' },
+            { href: '#team',     label: 'Stylists', num: '02' },
+            { href: '#testimonials', label: 'Reviews', num: '03' },
+            { href: '#studio',   label: 'Studio',   num: '04' },
+            { href: '#book',     label: 'Book',     num: '05' },
+          ].map(({ href, label, num }) => (
+            <a
+              key={href}
+              href={href}
+              className="mobile-nav-item"
+              onClick={(e) => { handleNavClick(e, href); setMobileMenuOpen(false); }}
+            >
+              <span className="mobile-nav-num">{num}</span>
+              <span className="mobile-nav-label">{label}</span>
+              <span className="mobile-nav-arrow">→</span>
+            </a>
+          ))}
+        </nav>
+
+        <a
+          href="#book"
+          className="mobile-sidebar-cta"
+          onClick={(e) => { handleNavClick(e, '#book'); setMobileMenuOpen(false); }}
+        >
+          Book Appointment
+        </a>
+
+        <div className="mobile-sidebar-footer">
+          <p>Sri Lanka's Premier Luxury Salon</p>
+        </div>
+      </aside>
 
       <main id="home">
         <section className="hero section" aria-labelledby="hero-title">
