@@ -524,50 +524,44 @@ nav a:hover, footer a:hover {
 .statement {
   display: grid;
   align-items: center;
-  background: #ff1111; /* Vibrant brand red background */
-  color: #ffffff;      /* White default text color */
-  min-height: auto; /* Overrides full-screen minimum height */
+  /* Red base + CSS grid pattern (no base64 needed) layered on top */
+  background-color: #ff1111;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.15) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.15) 1px, transparent 1px);
+  background-size: 50px 50px;
+  background-position: 0 0;
+  color: #ffffff;
+  min-height: auto;
   padding: clamp(60px, 8vw, 110px) clamp(18px, 5vw, 72px);
-  border-top: 1px solid rgba(0, 0, 0, 0.1); /* Subtle dark borders */
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+  /* Scrolling grid animation — same timing as reference (0.92s per tile) */
+  animation: bg-scrolling-reverse 0.92s infinite linear;
 }
 
 .statement p {
+  position: relative;
+  z-index: 1;
   max-width: 41ch;
   margin: 0;
   font-family: var(--serif);
   font-size: clamp(42px, 8vw, 124px);
   line-height: .95;
   font-variation-settings: "wght" 560, "SOFT" 30, "WONK" 0;
-  
-  /* Masked text gradient animation using White, Red, and Black (no grey transitions) */
-  color: transparent;
-  background-image: linear-gradient(
-    110deg,
-    #ffffff 0%,
-    #ff1111 25%,
-    #000000 50%,
-    #ff1111 75%,
-    #ffffff 100%
-  );
-  background-size: 200% auto;
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: statement-mask-anim 7s linear infinite;
-  
-  /* Rich dark burgundy shadow (no grey) */
-  filter: drop-shadow(0 4px 12px #3a0003);
+  color: #ffffff;
+  filter: drop-shadow(0 4px 18px rgba(0, 0, 0, 0.45));
 }
 
-@keyframes statement-mask-anim {
-  0% {
-    background-position: 0% 50%;
-  }
-  100% {
-    background-position: 200% 50%;
-  }
+/* Diagonal grid scroll — background-position 0,0 → 50px,50px */
+@keyframes bg-scrolling-reverse {
+  0%   { background-position: 0 0; }
+  100% { background-position: 50px 50px; }
 }
+
+
 
 .section-kicker {
   display: grid;
